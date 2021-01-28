@@ -1,0 +1,16 @@
+E:\My New Project\InternetStatus\InternetStatus\bin\Debug\config.txt
+E:\My New Project\InternetStatus\InternetStatus\bin\Debug\onic.ico
+E:\My New Project\InternetStatus\InternetStatus\bin\Debug\offic.ico
+E:\My New Project\InternetStatus\InternetStatus\bin\Debug\proico.ico
+E:\My New Project\InternetStatus\InternetStatus\bin\Debug\NetStat.exe.config
+E:\My New Project\InternetStatus\InternetStatus\bin\Debug\NetStat.exe
+E:\My New Project\InternetStatus\InternetStatus\bin\Debug\NetStat.pdb
+E:\My New Project\InternetStatus\InternetStatus\bin\Debug\Newtonsoft.Json.dll
+E:\My New Project\InternetStatus\InternetStatus\bin\Debug\Newtonsoft.Json.xml
+E:\My New Project\InternetStatus\InternetStatus\obj\Debug\NetStat.frmMain.resources
+E:\My New Project\InternetStatus\InternetStatus\obj\Debug\NetStat.Properties.Resources.resources
+E:\My New Project\InternetStatus\InternetStatus\obj\Debug\NetStat.csproj.GenerateResource.cache
+E:\My New Project\InternetStatus\InternetStatus\obj\Debug\NetStat.csproj.CoreCompileInputs.cache
+E:\My New Project\InternetStatus\InternetStatus\obj\Debug\NetStat.csproj.CopyComplete
+E:\My New Project\InternetStatus\InternetStatus\obj\Debug\NetStat.exe
+E:\My New Project\InternetStatus\InternetStatus\obj\Debug\NetStat.pdb
