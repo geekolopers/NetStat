@@ -74,7 +74,16 @@ namespace NetStatDashboard.ViewModels
                     if (host.LastStatusDate == null || host.Pingable != pingable)
                         host.LastStatusDate = DateTime.Now;
 
-                    host.LastUpdate = ((int)(DateTime.Now - host.LastStatusDate.Value).TotalSeconds).ToString() + " second(s) ago";
+                    var lstup = (DateTime.Now - host.LastStatusDate.Value).TotalSeconds;
+                    if (lstup<60)
+                        host.LastUpdate = ((int)(DateTime.Now - host.LastStatusDate.Value).TotalSeconds).ToString() + " second(s) ago";
+                    else if (lstup>60 && lstup<3600)
+                        host.LastUpdate = ((int)(DateTime.Now - host.LastStatusDate.Value).TotalMinutes).ToString() + " minut(s) ago";
+                    else if (lstup>3600 && lstup<86400)
+                        host.LastUpdate = ((int)(DateTime.Now - host.LastStatusDate.Value).TotalHours).ToString() + " hour(s) ago";
+                    else
+                        host.LastUpdate = ((int)(DateTime.Now - host.LastStatusDate.Value).TotalDays).ToString() + " day(s) ago";
+
 
                     host.Pingable = pingable;
 
