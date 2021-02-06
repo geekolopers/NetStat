@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Net.NetworkInformation;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -40,10 +42,16 @@ namespace NetStatDashboard.ViewModels
 
         public void Start()
         {
-            foreach (var item in Hosts.Where(d=> !d.IsStart))
+            foreach (var item in Hosts.Where(d => !d.IsStart))
                 ThreadPool.QueueUserWorkItem(
                     new WaitCallback(delegate (object state)
-                    { StartPing(item); }), null);
+                    {
+                        if (item.ByPing)
+                            StartPing(item);
+                        else
+                            StartCheck(item);
+
+                    }), null);
         }
 
         void StartPing(Host host)
@@ -75,11 +83,11 @@ namespace NetStatDashboard.ViewModels
                         host.LastStatusDate = DateTime.Now;
 
                     var lstup = (DateTime.Now - host.LastStatusDate.Value).TotalSeconds;
-                    if (lstup<60)
+                    if (lstup < 60)
                         host.LastUpdate = ((int)(DateTime.Now - host.LastStatusDate.Value).TotalSeconds).ToString() + " second(s) ago";
-                    else if (lstup>60 && lstup<3600)
+                    else if (lstup > 60 && lstup < 3600)
                         host.LastUpdate = ((int)(DateTime.Now - host.LastStatusDate.Value).TotalMinutes).ToString() + " minut(s) ago";
-                    else if (lstup>3600 && lstup<86400)
+                    else if (lstup > 3600 && lstup < 86400)
                         host.LastUpdate = ((int)(DateTime.Now - host.LastStatusDate.Value).TotalHours).ToString() + " hour(s) ago";
                     else
                         host.LastUpdate = ((int)(DateTime.Now - host.LastStatusDate.Value).TotalDays).ToString() + " day(s) ago";
@@ -98,7 +106,94 @@ namespace NetStatDashboard.ViewModels
 
         }
 
-        public List<Host> Hosts 
+        async void StartCheck(Host host)
+        {
+            {
+                host.IsStop = false;
+                HttpClient client = new HttpClient();
+                while (!host.IsStop)
+                {
+                    bool pingable = false;
+                    host.IsStart = true;
+                    string statCode = null;
+                    try
+                    {
+
+
+                        var res = await client.GetAsync("https://login.nlai.ir/");
+                        statCode = res.StatusCode.ToString();
+                        if (string.IsNullOrWhiteSpace(host.ErrorStatusCodes))
+                            if (res.IsSuccessStatusCode)
+                                pingable = true;
+                            else
+                            {
+                                pingable = false;
+
+                            }
+                        else
+                        {
+                            foreach (var cd in host.ErrorStatusCodes.Split(','))
+                            {
+                                if (cd.Contains("-"))
+                                {
+                                    int min = int.Parse(cd.Split('-')[0]);
+                                    int max = int.Parse(cd.Split('-')[1]);
+
+                                    if ((int)res.StatusCode >= min && (int)res.StatusCode <= max)
+                                    {
+                                        pingable = false;
+                                        break;
+                                    }
+                                    else
+                                        pingable = true;
+
+
+                                }
+                                else
+                                {
+                                    if (((int)res.StatusCode).ToString() == cd)
+                                    {
+                                        pingable = false;
+                                        break;
+                                    }
+                                    else
+                                        pingable = true;
+                                }
+                            }
+                        }
+
+                    }
+                    catch (Exception ex)
+                    {
+                        pingable = false;
+                    }
+                    finally
+                    {
+                        host.LastStatusCode = statCode;
+
+                        if (host.LastStatusDate == null || host.Pingable != pingable)
+                            host.LastStatusDate = DateTime.Now;
+
+                        var lstup = (DateTime.Now - host.LastStatusDate.Value).TotalSeconds;
+                        if (lstup < 60)
+                            host.LastUpdate = ((int)(DateTime.Now - host.LastStatusDate.Value).TotalSeconds).ToString() + " second(s) ago";
+                        else if (lstup > 60 && lstup < 3600)
+                            host.LastUpdate = ((int)(DateTime.Now - host.LastStatusDate.Value).TotalMinutes).ToString() + " minut(s) ago";
+                        else if (lstup > 3600 && lstup < 86400)
+                            host.LastUpdate = ((int)(DateTime.Now - host.LastStatusDate.Value).TotalHours).ToString() + " hour(s) ago";
+                        else
+                            host.LastUpdate = ((int)(DateTime.Now - host.LastStatusDate.Value).TotalDays).ToString() + " day(s) ago";
+
+
+                        host.Pingable = pingable;
+                    }
+
+                    Thread.Sleep(host.DelayPing * 1000);
+                }
+            }
+        }
+
+        public List<Host> Hosts
         {
             get { return _hosts; }
             set { SetProperty(ref _hosts, value); Start(); }
@@ -108,7 +203,7 @@ namespace NetStatDashboard.ViewModels
         {
             HostWindow hostWindow = new HostWindow();
             hostWindow.DataContext = new HostViewModel(model);
-            hostWindow.Title = "Edit Host: "+model.Name;
+            hostWindow.Title = "Edit Host: " + model.Name;
             hostWindow.ResizeMode = ResizeMode.NoResize;
             hostWindow.ShowDialog();
         }
@@ -135,7 +230,13 @@ namespace NetStatDashboard.ViewModels
             else
                 ThreadPool.QueueUserWorkItem(
                     new WaitCallback(delegate (object state)
-                    { StartPing(model); }), null);
+                    {
+                        if (model.ByPing)
+                            StartPing(model);
+                        else
+                            StartCheck(model);
+
+                    }), null);
 
         }
     }

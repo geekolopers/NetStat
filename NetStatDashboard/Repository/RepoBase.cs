@@ -17,7 +17,7 @@ namespace NetStatDashboard.Repository
         {
             try
             {
-                using(var txtReader=new StreamReader("data.txt"))
+                using (var txtReader = new StreamReader("data.txt"))
                 {
                     var txt = txtReader.ReadToEnd();
 
@@ -44,13 +44,22 @@ namespace NetStatDashboard.Repository
         {
             try
             {
-                using(var txtWriter=new StreamWriter("data.txt"))
+                using (var txtWriter = new StreamWriter("data.txt"))
                 {
                     string jsData = "";
                     if (data == null || data.Count <= 0)
                         jsData = "";
                     else
-                        jsData = JsonConvert.SerializeObject(data);
+                        jsData = JsonConvert.SerializeObject(data.Select(d => new
+                        {
+                            d.ByPing,
+                            d.DelayPing,
+                            d.ErrorStatusCodes,
+                            d.HostName,
+                            d.Id,
+                            d.Name,
+                            d.NotifyTime
+                        }));
 
                     txtWriter.Write(jsData);
                     txtWriter.Flush();

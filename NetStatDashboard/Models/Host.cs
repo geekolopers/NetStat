@@ -23,6 +23,9 @@ namespace NetStatDashboard.Models
         bool _isStart = false;
         bool _isstop = true;
         string _stText = "";
+        string _errorStatusCodes = "";
+        string _lastStatusCode = "";
+        bool _byPing = false;
         public Host()
         {
             if (!IsStart)
@@ -153,7 +156,30 @@ namespace NetStatDashboard.Models
                 SetProperty(ref _stText, value);
             }
         }
-
+        public string ErrorStatusCodes
+        {
+            get { return _errorStatusCodes; }
+            set
+            {
+                SetProperty(ref _errorStatusCodes, value);
+            }
+        }        
+        public string LastStatusCode
+        {
+            get { return _lastStatusCode; }
+            set
+            {
+                SetProperty(ref _lastStatusCode, value);
+            }
+        }
+        public bool ByPing
+        {
+            get { return _byPing; }
+            set
+            {
+                SetProperty(ref _byPing, value);
+            }
+        }
 
     }
 }
