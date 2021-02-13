@@ -120,7 +120,7 @@ namespace NetStatDashboard.ViewModels
                     {
 
 
-                        var res = await client.GetAsync("https://login.nlai.ir/");
+                        var res = await client.GetAsync(host.HostName);
                         statCode = res.StatusCode.ToString();
                         if (string.IsNullOrWhiteSpace(host.ErrorStatusCodes))
                             if (res.IsSuccessStatusCode)
